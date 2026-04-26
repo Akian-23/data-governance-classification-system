@@ -1,0 +1,24 @@
+id,description,name,email,salary,ssn,credit_card,medical_note,Classification,Retention,Action
+1,Company announcement about new product launch,,,,,,,Public,No restriction,Standard storage
+2,Quarterly strategy discussion notes,John Smith,j***@company.com,,,,,Internal,3-5 years,Internal access only
+3,Finance department compensation report,Jane Doe,j***@company.com,75000,,,,Confidential,7 years,Restricted access
+4,Customer transaction record,,,,,****-****-****-9876,,Highly Sensitive,8 years (SOX-inspired),Encryption + restricted access
+5,Clinical report for patient case,Aura Ouji,,,,,REDACTED (Medical Information),Highly Sensitive,6 years (HIPAA-inspired),Encryption + restricted access
+6,Press release for company expansion,,,,,,,Public,No restriction,Standard storage
+7,HR policy update document,,,,,,,Internal,3-5 years,Internal access only
+8,Employee record,Addal Pira,a***@company.com,,***-**-6789,,,Highly Sensitive,8 years (SOX-inspired),Encryption + restricted access
+9,Website marketing campaign launch,,,,,,,Public,No restriction,Standard storage
+10,Project planning session notes,,,,,,,Internal,3-5 years,Internal access only
+11,Performance evaluation summary,Emily Clark,,82000,,,,Confidential,7 years,Restricted access
+12,Invoice with billing details,David Lee,,,,****-****-****-3333,,Highly Sensitive,8 years (SOX-inspired),Encryption + restricted access
+13,Treatment record for medical case,,,,,,REDACTED (Medical Information),Highly Sensitive,6 years (HIPAA-inspired),Encryption + restricted access
+14,Blog article about workplace culture,,,,,,,Public,No restriction,Standard storage
+15,Training material for onboarding,,,,,,,Internal,3-5 years,Internal access only
+16,Customer support email regarding account issue,user@email.com,,,,,,Internal,3-5 years,Internal access only
+17,Spreadsheet export of employee data,Chris Evans,c***@company.com,68000,***-**-4321,,,Highly Sensitive,8 years (SOX-inspired),Encryption + restricted access
+18,Meeting notes shared externally,,,,,,,Public,No restriction,Standard storage
+19,Internal audit findings summary,,,,,,,Internal,3-5 years,Internal access only
+20,User signup data export,,u***@email.com,,,,,Public,No restriction,Standard storage
+21,Report shared with external partners but contains financial projections,,,,,,,Confidential,7 years,Restricted access
+22,Old archived employee data ,,,55000,***-**-3333,,,Highly Sensitive,8 years (SOX-inspired),Encryption + restricted access
+23,Customer feedback form submission,user3@email.com,,,,,,Public,No restriction,Standard storage
