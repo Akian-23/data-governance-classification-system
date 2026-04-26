@@ -12,23 +12,24 @@ from utils.masking import (
     mask_medical_note
 )
 
-# -------------------------------
+from utils.pdf_report import create_pdf_report
+
+
 # PAGE CONFIG
-# -------------------------------
 st.set_page_config(page_title="Data Governance System", layout="wide")
 
-# -------------------------------
 # SESSION STATE INIT
-# -------------------------------
 if "df" not in st.session_state:
     st.session_state.df = None
 
 if "processed" not in st.session_state:
     st.session_state.processed = False
 
-# -------------------------------
+if "page" not in st.session_state:
+    st.session_state.page = "Home"
+
+
 # MASKING FUNCTION
-# -------------------------------
 def apply_masking(df):
     df = df.copy()
 
@@ -46,15 +47,24 @@ def apply_masking(df):
 
     return df
 
-# -------------------------------
-# NAVIGATION
-# -------------------------------
-st.sidebar.title("Navigation")
-page = st.sidebar.radio("Go to", ["Home", "Upload", "Processing", "Report"])
 
-# -------------------------------
+
+# NAVIGATION
+st.sidebar.title("Navigation")
+pages = ["Home", "Upload", "Processing", "Report"]
+
+selected = st.sidebar.radio(
+    "Go to",
+    pages,
+    index=pages.index(st.session_state.page)
+)
+
+st.session_state.page = selected
+page = st.session_state.page
+
+
+
 # HOME PAGE
-# -------------------------------
 if page == "Home":
     st.title("Intelligent Data Classification & Governance System")
 
@@ -67,12 +77,21 @@ if page == "Home":
     3. View governance report
     """)
 
-    if st.button("Start"):
-        st.switch_page("Upload")
+    st.info("""
+    Security Model:
+            
+    • Data is processed in-memory (session-based)
+            
+    • No permanent storage of uploaded datasets
+            
+    • Data is cleared on reset or session end
+    """)
 
-# -------------------------------
+    if st.button("Start"):
+        st.session_state.page = "Upload"
+        st.rerun()
+
 # UPLOAD PAGE
-# -------------------------------
 elif page == "Upload":
     st.title("Upload Dataset")
 
@@ -86,9 +105,11 @@ elif page == "Upload":
         st.success("Dataset uploaded successfully!")
         st.dataframe(df.head())
 
-# -------------------------------
+        st.session_state.page = "Processing"
+        st.rerun()
+
+
 # PROCESSING PAGE
-# -------------------------------
 elif page == "Processing":
     st.title("Processing Dataset")
 
@@ -108,9 +129,11 @@ elif page == "Processing":
 
             st.success("Processing complete!")
 
-# -------------------------------
+            st.session_state.page = "Report"
+            st.rerun()
+
+
 # REPORT PAGE
-# -------------------------------
 elif page == "Report":
     st.title("Governance Report")
 
@@ -120,9 +143,24 @@ elif page == "Report":
         df = st.session_state.df
 
         # SUMMARY
+        import matplotlib.pyplot as plt
+
         st.subheader("Classification Summary")
+
         summary = df["Classification"].value_counts()
-        st.bar_chart(summary)
+
+        fig, ax = plt.subplots(figsize=(4.5, 3)) 
+
+        ax.bar(summary.index.astype(str), summary.values)
+
+        ax.set_xlabel("Classification")
+        ax.set_ylabel("Count")
+        ax.set_title("Data Classification Distribution")
+
+        plt.xticks(rotation=30, ha='right')
+
+        st.pyplot(fig, use_container_width=False)
+
 
         # TABLE
         st.subheader("Detailed Results")
@@ -139,13 +177,19 @@ elif page == "Report":
 
         # DOWNLOAD TEXT REPORT
         report_text = "\n".join([
+            "===================================",
             "DATA GOVERNANCE REPORT",
+            "===================================",
             "",
-            "SUMMARY:",
+            "CLASSIFICATION SUMMARY:",
             str(summary),
             "",
-            "DETAILS:",
-            df.to_string()
+            "-----------------------------------",
+            "DETAILED RECORDS",
+            "-----------------------------------",
+            df[["id", "description", "Classification", "Retention", "Action"]].to_string(index=False),
+            "",
+            "==================================="
         ])
 
         st.download_button(
@@ -155,8 +199,50 @@ elif page == "Report":
             mime="text/plain"
         )
 
+        if st.button("Generate PDF Report"):
+            create_pdf_report(df, summary)
+            st.success("PDF generated successfully!")
+            
+            with open("governance_report.pdf", "rb") as f:
+                pdf_bytes = f.read()
+
+                st.download_button(
+                    "Download PDF Report",
+                    f,
+                    file_name="governance_report.pdf",
+                    mime="application/pdf"
+                )
+
+
         # RESET BUTTON
-        if st.button("Reset System"):
-            st.session_state.df = None
-            st.session_state.processed = False
-            st.success("System reset. Go back to Upload.")
+        if "confirm_reset" not in st.session_state:
+            st.session_state.confirm_reset = False
+
+        if st.button("Reset System", key="reset_btn"):
+            st.session_state.confirm_reset = True
+
+        if st.session_state.confirm_reset:
+            st.warning("WARNING: You will lose your data. Download report first.")
+
+            col1, col2 = st.columns(2)
+
+            with col1:
+                if st.button("Yes, Reset"):
+                    st.session_state.df = None
+                    st.session_state.processed = False
+                    st.session_state.confirm_reset = False
+                    st.success("System reset.")
+                    st.session_state.page = "Home" 
+                    st.rerun()
+
+            with col2:
+                if st.button("Cancel"):
+                    st.session_state.confirm_reset = False
+        
+
+        
+        st.subheader("Security & Data Handling")
+
+        st.write(""" The system uses a session-based processing model. Uploaded datasets are stored temporarily in memory during execution and are not persisted to disk or external storage. 
+                 Data is automatically cleared when the session ends or when the user performs a system reset, simulating secure ephemeral processing commonly used in governance and compliance tools.
+        """)
