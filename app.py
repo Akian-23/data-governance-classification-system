@@ -66,7 +66,7 @@ page = st.session_state.page
 
 # HOME PAGE
 if page == "Home":
-    st.title("Intelligent Data Classification & Governance System")
+    st.title(" Data Classification & Governance System")
 
     st.write("""
     This system classifies data into sensitivity levels and applies governance rules such as retention policies and security controls.
@@ -247,7 +247,7 @@ elif page == "Report":
         
 
         st.markdown("""
-        <div style="padding:15px; background-color: #87CEEB; border-radius:8px; border-left:5px solid #3366cc;">
+        <div style="padding:15px; background-color: #87CEEB; color: black; border-radius:8px; border-left:5px solid #3366cc;">
         <b>Security & Data Handling</b><br><br>
         The system uses a session-based processing model. Uploaded datasets are stored temporarily in memory and are not persisted to disk.
         Data is automatically cleared when the session ends or when the user resets the system.
