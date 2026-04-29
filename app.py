@@ -15,10 +15,10 @@ from utils.masking import (
 from utils.pdf_report import create_pdf_report
 
 
-# PAGE CONFIG
+# Page Configuration
 st.set_page_config(page_title="Data Governance System", layout="wide")
 
-# SESSION STATE INIT
+
 if "df" not in st.session_state:
     st.session_state.df = None
 
@@ -29,7 +29,7 @@ if "page" not in st.session_state:
     st.session_state.page = "Home"
 
 
-# MASKING FUNCTION
+# Masking
 def apply_masking(df):
     df = df.copy()
 
@@ -49,7 +49,7 @@ def apply_masking(df):
 
 
 
-# NAVIGATION
+# Navigation
 st.sidebar.title("Navigation")
 pages = ["Home", "Upload", "Processing", "Report"]
 
@@ -149,7 +149,7 @@ elif page == "Report":
 
         summary = df["Classification"].value_counts()
 
-        fig, ax = plt.subplots(figsize=(4.5, 3)) 
+        fig, ax = plt.subplots(figsize=(4, 3)) 
 
         ax.bar(summary.index.astype(str), summary.values)
 
@@ -158,6 +158,10 @@ elif page == "Report":
         ax.set_title("Data Classification Distribution")
 
         plt.xticks(rotation=30, ha='right')
+
+        plt.tight_layout()
+        plt.savefig("chart.png", bbox_inches='tight', dpi=150)
+
 
         st.pyplot(fig, use_container_width=False)
 
@@ -199,19 +203,21 @@ elif page == "Report":
             mime="text/plain"
         )
 
+        # GENERATE PDF REPORT
+
         if st.button("Generate PDF Report"):
+            summary = df["Classification"].value_counts()
             create_pdf_report(df, summary)
-            st.success("PDF generated successfully!")
             
             with open("governance_report.pdf", "rb") as f:
                 pdf_bytes = f.read()
 
                 st.download_button(
-                    "Download PDF Report",
-                    f,
-                    file_name="governance_report.pdf",
-                    mime="application/pdf"
-                )
+                label="Download PDF Report",
+                data=pdf_bytes,
+                file_name="governance_report.pdf",
+                mime="application/pdf"
+            )
 
 
         # RESET BUTTON
@@ -240,9 +246,10 @@ elif page == "Report":
                     st.session_state.confirm_reset = False
         
 
-        
-        st.subheader("Security & Data Handling")
-
-        st.write(""" The system uses a session-based processing model. Uploaded datasets are stored temporarily in memory during execution and are not persisted to disk or external storage. 
-                 Data is automatically cleared when the session ends or when the user performs a system reset, simulating secure ephemeral processing commonly used in governance and compliance tools.
-        """)
+        st.markdown("""
+        <div style="padding:15px; background-color: #87CEEB; border-radius:8px; border-left:5px solid #3366cc;">
+        <b>Security & Data Handling</b><br><br>
+        The system uses a session-based processing model. Uploaded datasets are stored temporarily in memory and are not persisted to disk.
+        Data is automatically cleared when the session ends or when the user resets the system.
+        </div>
+        """, unsafe_allow_html=True)
