@@ -205,3 +205,10 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+
+
+# Project-generated files
+chart.png
+governance_report.pdf
+governance_report.csv
+governance_report.txt
